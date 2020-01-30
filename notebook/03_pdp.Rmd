@@ -12,6 +12,7 @@ library(flow)
 A la suite de mes recherches sur les R6 OOP, j'ai découvert le package distr6. Ce package n'est pas exécutable dans la configuration standard de la SciViews Box 2019 (La suite de ce document est donc rédigé en dehors de cette dernière).
 
 Le package distr6 propose déjà une fonction plot afin de montrer 
+
 ## Initiation au package distr6
 
 Ces quelques exemples montrent les bases de package distr6.

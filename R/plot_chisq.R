@@ -2,7 +2,7 @@
 #'
 #' @param df degrees of freedom
 #' @param quantiles value of quantile
-#' #' @param seuil_alpha value of probability
+#' @param seuil_alpha value of probability
 #' @param xlab a title for the x axis
 #' @param ylab a title for the y axis
 #' @param ...  TODO
