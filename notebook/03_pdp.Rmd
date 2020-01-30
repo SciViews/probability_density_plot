@@ -1,0 +1,109 @@
+---
+title: "Le package distr6"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(magrittr)
+library(flow)
+```
+
+A la suite de mes recherches sur les R6 OOP, j'ai découvert le package distr6. Ce package n'est pas exécutable dans la configuration standard de la SciViews Box 2019 (La suite de ce document est donc rédigé en dehors de cette dernière).
+
+Le package distr6 propose déjà une fonction plot afin de montrer 
+## Initiation au package distr6
+
+Ces quelques exemples montrent les bases de package distr6.
+
+```{r}
+library(distr6)
+```
+
+La distribution normale est employée afin de découvrir cet outil. 
+
+```{r}
+# on cree un objet en lien avec une distribution normale de moyenne 0 et d'écart-type de 2
+n <- Normal$new(mean = 0, sd = 2)
+```
+
+Un ensemble d'information sur notre objet nommé `n` avec les fonction 
+
+```{r}
+n$print()
+n$summary()
+n$parameters()
+```
+
+Il est évidement possible de connaitre un des paramètres de la distribution en particulier avec la fonction suivante
+
+```{r}
+n$getParameterValue("prec")
+```
+
+Pour modifier l'objet, on va employer la fonction suivante
+
+```{r}
+n$setParameterValue(mean = 5, prec = 2)
+# toutes les modifications sont visibles dans avec les fonctions citées précédement
+#n$summary()
+n$parameters()
+#n$properties()
+```
+
+## Statistiques courantes sur les distributions
+
+Les fonctions comme dnorm(), pnorm(), qnorm(), rnorm() sont disponibles avec quelques modifications des noms de fonction
+
+```{r}
+n$setParameterValue(mean = 0, sd = 2)
+# dnorm ----
+## stats package
+dnorm(x = 2, mean = 0, sd = 2)
+## distr6 package
+## 
+n$pdf(2)
+## ou 
+pdf(n, 2)
+## ou encore
+n %>% pdf(2)
+```
+
+Les autres fonctions courantes sont présentée ci-dessous
+
+```{r}
+pnorm(q = 2, mean = 0, sd = 2)
+n$cdf(2)
+
+pnorm(q = 2, mean = 0, sd = 2, lower.tail = F)
+n$cdf(2, lower.tail = F)
+
+rnorm(n = 10, mean = 0, sd = 2)
+n$rand(10)
+```
+
+Après avoir regardé au fonction dans la package, il existe déjà un fonction plot.distribution()
+
+```{r}
+plot(n)
+plot(Normal$new(), col = "red")
+plot(Normal$new(), fun = "pdf",col = "red")
+plot(Normal$new(), fun = "pdf", npoints = 15000, col = "red")
+```
+
+
+## Les distributions disponibles
+
+Ce package est prévu pour travailler avec de nombreuses distribution comme le montre la liste ci-dessous 
+
+```{r}
+listDistributions(simplify = FALSE, filter = NULL)
+```
+
+
+## Pour en savoir plus
+
+Une série de tutoriels avancées sont proposés via la lien suivant :
+
+<https://alan-turing-institute.github.io/distr6/articles/webs/s3_piping.html>
+

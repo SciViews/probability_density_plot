@@ -1,0 +1,208 @@
+---
+title: "density_plot()"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(flow)
+```
+
+Ce projet a été présenté le **16 janvier 2020** dans le cadre des séminaires du service d'Ecologie Numérique des Milieux Aquatiques (ECONUM). 
+
+A la suite de la discussion concernant ce projet, les propositons suivantes ont été mises en avant :
+
+- l'idée est intéressante et mérite d'y consacrer du temps.
+- les fonctions réalisée seront placé dans un nouveau package de l'univers SciViews nommé : `infer.tool`. Ce package aura pour objectif de fournir des outils afin de réaliser des tests d'inférence dans R
+- Il est proposé d'explorer les R6 OOP pour ce projet. 
+- Il a été mis en évidence de l'importance d'employer des arguments employé par les fonctions de R de base comme par exemple df pour les degrés de liberté et non degrees of freedom,...
+
+## Préambule
+
+Ce document est réalisé afin de permettre la réfléxion sur l'écriture d'une/des fonctions concernant la problématique des graphiques associés aux distributions statistiques. 
+
+En effet, il n'existe pas à ma connaissance de fonction permettant de réaliser simplement le graphique associé à une distribution statistique. Ce type de graphique peut par exemple être utile lors de l'apprentissage des tests d'inférences. 
+
+## Contexte
+
+Après quelques recherches, j'ai trouvé des instructions comme présentée ci-dessous. Il faut donc un peu moins de 10 lignes de codes afin de produire la graphique de la distribution du chi^2^.
+
+```{r}
+# Chi-square distribution (density probability) with parameter:
+.df <- 5 # Degree of freedom .df
+.col <- 1; .add <- FALSE # Plot parameters
+.x <- seq(0, qchisq(0.999, df = .df), l = 1000)  # Quantiles
+.d <- function (x) dchisq(x, df = .df)           # Distribution function
+.q <- function (p) qchisq(p, df = .df)           # Quantile for lower-tail prob
+.label <- bquote(paste(chi^2,(.(.df))))          # Curve parameters
+curve(.d(x), xlim = range(.x), xaxs = "i", n = 1000, col = .col,
+  add = .add, xlab = "Quantiles", ylab = "Probability density") # Curve
+abline(h = 0, col = "gray") # Baseline
+```
+
+Ensuite, j'ai trouvé le package [webr](https://cardiomoon.github.io/webr/index.html) qui permet de représenter le graphique associé à la distribution lié à un test statistique. 
+
+Voici un exemple proposé dans la vigentte de ce package.
+
+```{r}
+# Ce package n'est pas dans la machine virtuelle mais il peut être facillement installé avec l'instruction suivante
+#install.packages("webr")
+#
+require(moonBook)
+require(webr)
+ 
+ # chi-squared test
+ x <- chisq.test(table(acs$sex, acs$DM))
+ x
+ 
+ plot(x)
+```
+
+La problématique avec ce package est que la réalisation du graphique de la distribution n'est disponible que pour l'objet htest dans le cas cité ci-dessus. 
+
+Je souhaiterai avoir à ma disposition un outil qui permet de réaliser les graphiques de distributions en précisant par exemple uniquement la distribution, le nombre de degré de liberté,...
+
+à la suite de ce constant je propose un début de réflexion ci-dessous.
+
+## Distribution du chi^2^
+
+```{r chi_plot}
+source("../R/plot_chisq.R")
+plot_chisq
+```
+
+```{r}
+plot_chisq(df = 1)
+plot_chisq(df = 3, seuil_alpha = 0.05)
+plot_chisq(df = 10, quantiles = 34)
+plot_chisq(df = 3, seuil_alpha = 0.05, quantiles = 34)
+```
+
+## Distribution de Student
+
+```{r student_plot}
+source("../R/plot_t.R")
+plot_t
+```
+
+```{r }
+plot_t(mu = 10, sigma = 6, df = 500)
+             
+plot_t(mu = 10, sigma = 1, df = 500, quantiles = 12)
+
+plot_t(mu = 10, sigma = 1, df = 500, quantiles = 11, seuil_alpha = 0.05, alternative = "two.sided")
+
+plot_t(mu = 10, sigma = 1, df = 500, quantiles = 11, seuil_alpha = 0.05, alternative = "less")
+
+plot_t(mu = 10, sigma = 1, df = 500, quantiles = 11, seuil_alpha = 0.05, alternative = "greater")
+```
+
+## Distribution F
+
+```{r}
+source("../R/plot_f.R")
+plot_f
+```
+
+```{r}
+plot_f(df1 = 5, df2 = 20)
+plot_f(df1 = 5, df2 = 20, seuil_alpha = 0.05)
+plot_f(df1 = 5, df2 = 20, quantiles = 3.5)
+plot_f(df1 = 5, df2 = 20, 
+  quantiles = 3.5, seuil_alpha = 0.05)
+```
+
+## Fonction autoplot() pour le chisq.test()
+
+```{r}
+source("../R/autoplot.htest.R")
+autoplot.htest
+```
+## test 
+
+### chisq.test
+
+```{r}
+crossbill <- tibble::tibble(cb = c(rep("left", 1895), rep("right", 1752)))
+
+(crossbill_tab <- table(crossbill$cb))
+
+ggplot2::autoplot(chisq.test(crossbill_tab, p = c(1/2, 1/2)))
+```
+
+
+```{r}
+monkey <- tibble::tibble(food = c(rep("apple", 1895), rep("peer", 1752), rep("banana", 1812)))
+(monkey_tab <- table(monkey$food))
+
+ggplot2::autoplot(chisq.test(monkey_tab, p = c(1/3, 1/3, 1/3)))
+```
+
+```{r}
+timolol1 <- tibble::tibble(
+  traitement = c("timolol", "timolol", "placebo", "placebo"),
+  patient    = c("sain",    "malade",  "sain",    "malade"),
+  freq       = c(44,        116,       19,        128)
+)
+# Création du tableau de contingence 
+timolol_table <- xtabs(data = timolol1, freq ~ patient + traitement)
+timolol_table
+
+(chi2. <- chisq.test(timolol_table)); cat("Expected frequencies:\n"); chi2.[["expected"]]
+
+ggplot2::autoplot(chi2.)
+```
+
+### t.test
+
+```{r}
+is <- data.io::read("iris", package = "datasets", lang = "FR") %>.%
+  dplyr::filter(. , species != "versicolor") %>.%
+  dplyr::mutate(., species = droplevels(species)) -> species
+
+t_test <- t.test(petal_length ~ species, is)
+ggplot2::autoplot(t_test)
+t_test <- t.test(petal_length ~ species, is, alternative = "less")
+ggplot2::autoplot(t_test)
+```
+
+
+```{r}
+crabs <- data.io::read("crabs", package = "MASS", lang = "fr")
+
+t_test <- t.test(data = crabs, rear ~ sex,
+  alternative = "two.sided", conf.level = 0.95, var.equal = TRUE)
+ggplot2::autoplot(t_test)
+
+t_test <- t.test(data = crabs, rear ~ sex,
+  alternative = "two.sided", conf.level = 0.99, var.equal = TRUE)
+ggplot2::autoplot(t_test)
+
+t_test  <- t.test(crabs$front, crabs$rear,
+  alternative = "two.sided", conf.level = 0.95, paired = TRUE)
+ggplot2::autoplot(t_test)
+
+```
+
+```{r}
+sleep <- data.io::read("sleep", package = "datasets")
+
+sleep2 <- tidyr::spread(sleep, key = group, value = extra)
+names(sleep2) <- c("id", "med1", "med2")
+
+t_test  <- t.test(sleep2$med1, sleep2$med2,
+  alternative = "two.sided", conf.level = 0.95, paired = TRUE)
+
+ggplot2::autoplot(t_test)
+
+t_test  <- t.test(sleep2$med1,
+  alternative = "two.sided", mu = 0, conf.level = 0.95)
+
+ggplot2::autoplot(t_test)
+
+t_test  <- t.test(sleep2$med1,
+  alternative = "two.sided", mu = 1, conf.level = 0.95)
+
+ggplot2::autoplot(t_test)
+```
+
