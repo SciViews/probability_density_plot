@@ -160,8 +160,11 @@ is <- data.io::read("iris", package = "datasets", lang = "FR") %>.%
   dplyr::filter(. , species != "versicolor") %>.%
   dplyr::mutate(., species = droplevels(species)) -> species
 
-t_test <- t.test(petal_length ~ species, is)
+(t_test <- t.test(petal_length ~ species, is))
 ggplot2::autoplot(t_test)
+```
+
+```{r}
 t_test <- t.test(petal_length ~ species, is, alternative = "less")
 ggplot2::autoplot(t_test)
 ```

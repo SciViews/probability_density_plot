@@ -56,7 +56,7 @@ La suite de la réflexion se trouve dans le dossier notebook de ce projet.
 ## Réflexion
 
 ```{r}
-dir_tree(path = "notebook")
+dir_tree(path = "notebook", recurse = F, glob = "*.Rmd")
 ```
 
 ### 01_pdp.Rmd

@@ -83,42 +83,14 @@ projet.
 ## Réflexion
 
 ``` r
-dir_tree(path = "notebook")
+dir_tree(path = "notebook", recurse = F, glob = "*.Rmd")
 ```
 
     ## notebook
     ## ├── 01_pdp.Rmd
-    ## ├── 01_pdp.md
-    ## ├── 01_pdp_files
-    ## │   └── figure-gfm
-    ## │       ├── unnamed-chunk-1-1.png
-    ## │       ├── unnamed-chunk-10-1.png
-    ## │       ├── unnamed-chunk-11-1.png
-    ## │       ├── unnamed-chunk-11-2.png
-    ## │       ├── unnamed-chunk-12-1.png
-    ## │       ├── unnamed-chunk-12-2.png
-    ## │       ├── unnamed-chunk-12-3.png
-    ## │       ├── unnamed-chunk-13-1.png
-    ## │       ├── unnamed-chunk-13-2.png
-    ## │       ├── unnamed-chunk-13-3.png
-    ## │       ├── unnamed-chunk-2-1.png
-    ## │       ├── unnamed-chunk-3-1.png
-    ## │       ├── unnamed-chunk-3-2.png
-    ## │       ├── unnamed-chunk-3-3.png
-    ## │       ├── unnamed-chunk-3-4.png
-    ## │       ├── unnamed-chunk-4-1.png
-    ## │       ├── unnamed-chunk-4-2.png
-    ## │       ├── unnamed-chunk-4-3.png
-    ## │       ├── unnamed-chunk-4-4.png
-    ## │       ├── unnamed-chunk-4-5.png
-    ## │       ├── unnamed-chunk-6-1.png
-    ## │       ├── unnamed-chunk-6-2.png
-    ## │       ├── unnamed-chunk-6-3.png
-    ## │       ├── unnamed-chunk-6-4.png
-    ## │       ├── unnamed-chunk-8-1.png
-    ## │       └── unnamed-chunk-9-1.png
     ## ├── 02_pdp.Rmd
-    ## └── 03_pdp.Rmd
+    ## ├── 03_pdp.Rmd
+    ## └── 04_pdp.Rmd
 
 ### 01\_pdp.Rmd
 
